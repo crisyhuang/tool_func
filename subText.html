@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS控制多行文字，超出显示省略号</title>
+    <style>
+        div, p{
+            padding: 0;
+            margin: 0;
+        }
+        div{
+            width: 300px;
+            height: 75px;
+            line-height: 24px;
+            border: 1px solid green;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="subTextDiv_1">
+    需求One：固定显示20个字，其中，英文字符占1个字符，中文字符占2个字符。该方法会输出固定字数，但省略号的位置不固定。
+</div>
+
+<div id="subTextDiv_2">
+    <p>需求Two：固定显示3行文字，超出则显示省略号，且省略号要位于行末。该方法不会限定固定字数，但能确保省略号在行末。</p>
+</div>
+
+<script>
+    (function () {
+        let subText = {
+            init(){
+                let subTextDiv_1 = document.getElementById('subTextDiv_1');
+                subTextDiv_1.innerHTML = this.subTextTool_1(subTextDiv_1.innerHTML.trim(), 90, true);
+
+                let subTextDiv_2 = document.getElementById('subTextDiv_2');
+                this.subTextTool_2(subTextDiv_2);
+            },
+
+            /**
+             * @description 输出固定字数，但省略号的位置不固定
+             * @param str 原字符串
+             * @param len 限定的字数
+             * @param hasDot 是否有省略号
+             * @return newStr 处理后的字符串
+             */
+            subTextTool_1(str, len, hasDot) {
+                let newLength = 0,
+                    newStr = "",
+                    chineseRegex = /[^\x00-\xff]/g,
+                    singleChar = "",
+                    i, strLength = str.replace(chineseRegex, "**").length;
+                for (i = 0; i < strLength; i++) {
+                    singleChar = str.charAt(i).toString();
+                    if (singleChar.match(chineseRegex) !== null) {
+                        newLength += 2;
+                    }
+                    else {
+                        newLength++;
+                    }
+                    if (newLength > len) {
+                        break;
+                    }
+                    newStr += singleChar;
+                }
+
+                if (hasDot && strLength > len) {
+                    newStr += "...";
+                }
+                return newStr;
+            },
+
+            /**
+             * @description 输出固定字数，但省略号的位置不固定
+             * @param $text 原字符串包裹元素
+             */
+            subTextTool_2($text){
+                let $p = $text.getElementsByTagName('p')[0],
+                    textH = $text.offsetHeight;
+
+                // 该方法的缺点：频繁的获取宽高、DOM操作，会引起浏览器多次layout，影响性能
+                // 目前解决方案：截断原字符串，尽量减少引起layout的操作
+                $p.innerHTML = $p.innerHTML.substr(0, 80);
+
+                while($p.offsetHeight > textH){
+                    $p.innerHTML = $p.innerHTML.replace(/(\s)*([a-zA-Z0-9]+|\W)(\.\.\.)?$/, '...');
+                    console.log($p.innerHTML)
+                }
+            }
+        };
+
+        window.onload = subText.init();
+
+    })();
+</script>
+</body>
+</html>
