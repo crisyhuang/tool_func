@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>性能优化：节流</title>
+    <style>
+        h2{font-size: 30px;}
+        p{font-size: 100px;}
+    </style>
+</head>
+<body>
+<h2>场景：监听滚动事件，会一直发起请求，应采用节流方式，隔一段事件发起一次请求。</h2>
+<p>哈哈哈</p>
+<p>哈哈哈</p>
+<p>哈哈哈</p>
+<p>哈哈哈</p>
+<p>哈哈哈</p>
+<p>哈哈哈</p>
+<p>哈哈哈</p>
+<script>
+    // 节流
+    (function(){
+        var lastTime = 0;
+
+        var throttle = function(func, wait){
+            var now = +new Date();
+            if(now - lastTime > wait){
+                lastTime = now;
+                func();
+            }
+        };
+
+        document.addEventListener('scroll', function(){
+            throttle(function(){
+                console.log('hjj');
+            }, 500)
+        });
+    })();
+</script>
+</body>
+</html>
